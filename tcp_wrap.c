@@ -55,6 +55,13 @@ void process_syn(arguments *arg){
 
   crc_checksum((unsigned char*)tcph,sizeof(tcp_header),&arg->if_adr->sin_addr,
 	       &connection_dest_addr->sin_addr);
+
+  if(sendto(syn_raw_socket,tcph,sizeof(tcp_header),0,
+		   (struct sockaddr*)connection_dest_addr,
+	    sizeof(struct sockaddr_in)) == -1){
+    printf("Error while sending SYN packet\n");
+    exit(-1);
+  }
   
 }
 void process_ack(unsigned char packet){
