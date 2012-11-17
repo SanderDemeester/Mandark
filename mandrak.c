@@ -19,6 +19,10 @@ int main(int argc, char **argv){
   /*   exit(-1); */
   /* } */
   arguments *arg = parse_arguments(argc, argv);
+  pthread_t *packet_engine = (pthread_t*) malloc(sizeof(pthread_t));
+  
+  pthread_create(packet_engine, NULL, process_incoming_packets,NULL);
+  
   return 0;
 }
 

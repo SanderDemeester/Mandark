@@ -13,12 +13,30 @@
 
 #include "tcp_wrap.h"
 
-void process_incoming_packets(){
+void *process_incoming_packets(void*ptr){
+  int listen_socket = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
+  unsigned char *packet_buffer = (unsigned char*) malloc(sizeof(unsigned char)*1000);
+  
+  if(listen_socket < 0){
+    printf("Error while creating RAW_SOCKET to process incoming packets\n");
+    exit(-1);
+  }
+  
+  //We need a local socket to proces data
+  
+  struct sockaddr_in *me = (struct sockaddr_in*) malloc(sizeof(struct sockaddr_in));
+  me->sin_family = AF_INET;
+  me->sin_addr.s_addr = INADDR_ANY;
+  
+  bind(listen_socket,(struct sockaddr*)me,sizeof(*me));
+  
+  
+ 
 }
 void process_syn(arguments *arg){
 
   int syn_raw_socket = socket(AF_INET, SOCK_RAW,IPPROTO_TCP);
-  tcp_header *tcph = (struct tcp_header*) malloc(sizeof(tcp_header));
+  tcp_header *tcph = (tcp_header*) malloc(sizeof(tcp_header));
   struct sockaddr_in *connection_dest_addr = (struct sockaddr_in*) malloc(sizeof(struct sockaddr_in));
 
   if(syn_raw_socket < 0){
