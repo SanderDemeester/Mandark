@@ -5,3 +5,4 @@ typedef struct{
   struct sockaddr_in if_adr;
 }arguments;
 void help(int argc, char** argv); //function to display help page
+void parse_arguments(int argc, char **argv);
