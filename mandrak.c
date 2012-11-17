@@ -12,10 +12,15 @@
 
 
 int main(int argc, char **argv){
+  parse_arguments(argc, argv);
   return 0;
 }
 
 void parse_arguments(int argc, char **argv){
+  if(argc <= 3){
+    help(argc,argv);
+  }
+    
   int port_flag = 0;
   int ip_addr_flag = 0;
   int int_flag = 0;
@@ -44,6 +49,15 @@ void parse_arguments(int argc, char **argv){
       break;
     }
   }
+  printf("%d \n", port_flag);
+  printf("%d \n", ip_addr_flag);
+  printf("%d \n", int_flag);
+  printf("%d \n", verbose_flag);
   free(arg);
 }
 
+void help(int argc, char **argv){
+  printf("Usage: %s \n", argv[0]);
+  
+  exit(-1);
+}
