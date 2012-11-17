@@ -25,8 +25,8 @@ typedef struct{
 }tcp_header;
 
 void crc_checksum(unsigned char *packet, unsigned int packet_len, 
-		  struct in_addr src, 
-		  struct in_addr dst);
+		  struct in_addr *src, 
+		  struct in_addr *dst);
 
 void process_incoming_packets();
 void process_syn(arguments *arg);

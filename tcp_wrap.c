@@ -58,3 +58,11 @@ void process_syn(arguments *arg){
 }
 void process_ack(unsigned char packet){
 }
+
+void crc_checksum(unsigned char *packet, unsigned int packet_len, 
+		  struct in_addr *src, 
+		  struct in_addr *dst){
+  uint32_t sum = 0;
+
+  uint32_t src_ip = ntohl(src->s_addr);
+}
