@@ -14,6 +14,10 @@
 
 
 int main(int argc, char **argv){
+  if(getuid()){
+    printf("U root?\n");
+    exit(-1);
+  }
   parse_arguments(argc, argv);
   return 0;
 }
