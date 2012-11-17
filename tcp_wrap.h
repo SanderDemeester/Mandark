@@ -17,12 +17,11 @@ typedef struct{
   uint16_t dst_port; //dest port
   uint32_t seq; //seq number
   uint32_t ack; //ack number
-  uint16_t hlen_resend; //HLEN and resend
+  uint16_t hlen_re_flag; //HLEN and reserved & flags
   uint16_t window; //window size
   uint16_t crc; //standaard checksum
   uint16_t urgent_pnt; //Urgent Pointer
   uint32_t opt_pad; //options and paddding
-
 }tcp_header;
 
 void crc_checksum(unsigned char *packet, unsigned int packet_len, 

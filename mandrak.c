@@ -23,7 +23,7 @@ int main(int argc, char **argv){
 }
 
 arguments *parse_arguments(int argc, char **argv){
-  if(argc <= 3){
+  if(argc <= 4){
     help(argc,argv,1);
   }
     
