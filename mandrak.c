@@ -12,7 +12,7 @@
 #include <pthread.h>
 
 #include "mandrak.h"
-
+#include "tcp_wrap.h"
 
 int main(int argc, char **argv){
   /* if(getuid()){ */
