@@ -14,6 +14,7 @@
 #include "tcp_wrap.h"
 
 void *process_incoming_packets(void*ptr){
+  struct tcp_options tcp_f;
   int listen_socket = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
   unsigned char *packet_buffer = (unsigned char*) malloc(sizeof(unsigned char)*1000);
   
