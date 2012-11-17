@@ -65,4 +65,43 @@ void crc_checksum(unsigned char *packet, unsigned int packet_len,
   uint32_t sum = 0;
 
   uint32_t src_ip = ntohl(src->s_addr);
+  uint32_t dst_ip = ntohl(dst->s_addr);
+  int i;
+
+  sum += (src_ip >> 16) & 0xFFFF;
+  sum = (sum + (1 & (sum >> 16))) & 0xFFFF;
+  
+  sum += src_ip & 0x0000FFFF;
+  sum = (sum + (1 & (sum >> 16))) & 0xFFFF;
+  
+  sum += (dst_ip >> 16) & 0xFFFF;
+  sum = (sum + (1 & (sum >> 16))) & 0xFFFF;
+
+  sum += dst_ip & 0x0000FFFF;
+  sum = (sum + (1 & (sum >> 16))) & 0xFFFF;
+
+  sum += 0x0006;
+  sum = (sum + (1 & (sum >> 16))) & 0xFFFF;
+  
+  //len
+  sum += packet_len;
+  sum = (sum + (1 & (sum >> 16))) & 0xFFFF;
+
+  tcp_header *tcph = (tcp_header*) packet;
+  tcph->crc = 0;
+
+  for(i = 0; i < packet_len / 2; i++){
+    uint16_t b = (packet[i*2] << 8) | packet[i*2+1]; //kdb, yes i know
+    sum += b;
+    sum = (sum + (1 & (sum >> 16))) & 0xFFFF;
+  }
+  
+  //packet algin
+  if(packet_len % 2 == 1){
+    uint16_t b = packet[packet_len-1] << 8;
+    sum += b;
+    sum = (sum + (1 & (sum >> 16))) & 0xFFFF;
+  }
+  tcph->crc = htons(~sum);
+  
 }
