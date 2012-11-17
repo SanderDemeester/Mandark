@@ -7,4 +7,4 @@ typedef struct{
 }arguments;
 
 void help(int argc, char** argv,int h); //function to display help page
-arguments * parse_arguments(int argc, char **argv);
+arguments *parse_arguments(int argc, char **argv);
