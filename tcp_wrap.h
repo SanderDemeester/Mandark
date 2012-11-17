@@ -24,6 +24,16 @@ typedef struct{
   uint32_t opt_pad; //options and paddding
 }tcp_header;
 
+
+struct tcp_options{
+  int urg; //urgent flag
+  int ack; //ack
+  int psh; //push ... the button
+  int rst; //reset 
+  int syn; //syc
+  int fin; //fin
+};
+
 void crc_checksum(unsigned char *packet, unsigned int packet_len, 
 		  struct in_addr *src, 
 		  struct in_addr *dst);
