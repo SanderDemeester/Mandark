@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
+#include <arpa/inet.h>
 #include <pthread.h>
 
 #include "mandrak.h"
@@ -18,36 +19,30 @@ int main(int argc, char **argv){
   /*   printf("U root?\n"); */
   /*   exit(-1); */
   /* } */
-  parse_arguments(argc, argv);
+  arguments *arg = parse_arguments(argc, argv);
   return 0;
 }
 
-void parse_arguments(int argc, char **argv){
+arguments *parse_arguments(int argc, char **argv){
   if(argc <= 3){
     help(argc,argv,1);
   }
     
-  int port_flag = 0;
-  int ip_addr_flag = 0;
-  int int_flag = 0;
-  int verbose_flag = 0;
   int c = 0;
   
-  char *dest_ip = NULL;
-  char *dest_port = NULL;
-  char *int_f = NULL;
   arguments *arg = (arguments*) malloc(sizeof(arguments));
   
-  int opterr = 0;
   while((c = getopt(argc, argv,"d:p:i:vh")) != -1){
     switch(c){
     case 'd':
-      ip_addr_flag = 1;
-      dest_ip = optarg;
+      if(inet_aton(optarg,arg->dest_ip) == 0){
+	printf("Invalid IP-adr\n");
+	help(argc, argv,0);
+	exit(-1);
+      }
       break;
     case 'p':
-      port_flag = 1;
-      dest_port = optarg;
+      arg->port = atoi(optarg);
       break;
     case 'i':{
       int f_device;
@@ -68,7 +63,7 @@ void parse_arguments(int argc, char **argv){
       break;
     }
     case 'v':
-      verbose_flag = 1;
+      arg->verbose = 1;
       break;
     case 'h':
       help(argc,argv,1);
@@ -77,17 +72,7 @@ void parse_arguments(int argc, char **argv){
       help(argc,argv,0);
     }
   }
-  
-  printf("%d \n", port_flag);
-  printf("%d \n", ip_addr_flag);
-  printf("%d \n", int_flag);
-  printf("%d \n", verbose_flag);
-  
-  
-  
-  
-
-  free(arg);
+  return arg;
 }
 
 void help(int argc, char **argv, int h){
