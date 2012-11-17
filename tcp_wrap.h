@@ -1,4 +1,4 @@
-#include "mandrak.h"
+#include "mandark.h"
 typedef struct{
   unsigned char version_ihl; //version
   unsigned char tos; //type of service
