@@ -52,8 +52,9 @@ void process_syn(arguments *arg){
   tcph->urgent_pnt = 0; //urgent flag zero
   
   tcph->opt_pad = 0; //sign ext
-  
 
+  crc_checksum((unsigned char*)tcph,sizeof(tcp_header),&arg->if_adr->sin_addr,
+	       &connection_dest_addr->sin_addr);
   
 }
 void process_ack(unsigned char packet){
