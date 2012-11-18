@@ -68,6 +68,7 @@ void process_syn(arguments *arg){
   tcph->ack = 0; //first syn is 0
   tcph->hlen_re_flag = 0; //sign ext
   tcph->hlen_re_flag |= htons(0x0002); //set syn flag
+  tcph->hlen_re_flag |= htons(0x6000); //data field
 
   tcph->window = 1000; //default window size (handshake syn)
   tcph->urgent_pnt = 0; //urgent flag zero
