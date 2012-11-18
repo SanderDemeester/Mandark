@@ -38,13 +38,14 @@ void process_syn(arguments *arg){
 
   int syn_raw_socket = socket(AF_INET, SOCK_RAW,IPPROTO_TCP);
   tcp_header *tcph = (tcp_header*) malloc(sizeof(tcp_header));
-  struct sockaddr_in *connection_dest_addr = (struct sockaddr_in*) malloc(sizeof(struct sockaddr_in));
+  struct sockaddr_in *connection_dest_addr = (struct sockaddr_in*) calloc(1,sizeof(struct sockaddr_in));
 
   if(syn_raw_socket < 0){
     printf("Error while creating RAW socket for syn sending\n");
     printf(".. Sorry\n");
     exit(-1);
   }
+
   //Ah yes, fear to bind/commit. 
   if(bind(syn_raw_socket,(struct sockaddr*)arg->if_adr,
 	  sizeof(struct sockaddr_in)) == -1){
@@ -53,6 +54,7 @@ void process_syn(arguments *arg){
       printf("Fear of binding? No problem, it happes to the best of us\n");
     exit(-1);
   }
+  
   
   connection_dest_addr->sin_family = AF_INET;
   connection_dest_addr->sin_addr = *arg->dest_ip;

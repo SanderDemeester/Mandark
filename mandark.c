@@ -22,6 +22,8 @@ int main(int argc, char **argv){
   pthread_t *packet_engine = (pthread_t*) malloc(sizeof(pthread_t));
 
   
+  process_syn(arg);
+  
   pthread_create(packet_engine, NULL, process_incoming_packets,NULL);
   
   return 0;
