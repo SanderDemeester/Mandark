@@ -30,6 +30,9 @@ void *process_incoming_packets(void*ptr){
   me->sin_addr.s_addr = INADDR_ANY;
   
   bind(listen_socket,(struct sockaddr*)me,sizeof(*me));
+
+  while(1){
+  }
   
   
  
@@ -60,31 +63,31 @@ void process_syn(arguments *arg){
   connection_dest_addr->sin_family = AF_INET;
   connection_dest_addr->sin_addr = *arg->dest_ip;
   
-  //for test send just 1
+  while(1){
   tcph->src_port = (rand() & 0xFFFF); //our port is random
   tcph->dst_port = htons(arg->port); //our dest port
 
   tcph->seq = htonl(rand()); //our init seq is random
   tcph->ack = 0; //first syn is 0
   tcph->hlen_re_flag = 0; //sign ext
-  tcph->hlen_re_flag |= htons(0x0002); //set syn flag
   tcph->hlen_re_flag |= htons(0x6000); //data field
-
+  tcph->hlen_re_flag |= htons(0x0002); //set syn flag
+  
   tcph->window = 1000; //default window size (handshake syn)
   tcph->urgent_pnt = 0; //urgent flag zero
   
   tcph->opt_pad = 0; //sign ext
-
+  
   crc_checksum((unsigned char*)tcph,sizeof(tcp_header),&arg->if_adr->sin_addr,
 	       &connection_dest_addr->sin_addr);
-
+  
   if(sendto(syn_raw_socket,tcph,sizeof(tcp_header),0,
-		   (struct sockaddr*)connection_dest_addr,
+	    (struct sockaddr*)connection_dest_addr,
 	    sizeof(struct sockaddr_in)) == -1){
     printf("Error while sending SYN packet\n");
     exit(-1);
   }
-  
+  }
 }
 void process_ack(unsigned char packet){
 }
