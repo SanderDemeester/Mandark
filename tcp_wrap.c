@@ -54,12 +54,18 @@ void *process_incoming_packets(void*ptr){
       opt->syn = tcph->hlen_re_flag & htons(0x0002);
       opt->ack = tcph->hlen_re_flag & htons(0x0010);
       opt->fin = tcph->hlen_re_flag & htons(0x0001);
-      
 
+
+      //Finish handshake if syn && ack
+      if(opt->syn && opt->ack){
+      }
+      //Keep connection alive ack
+      if(opt->ack){
+      }else{
+	//help
+      }
     }
   }
-  
-  
  
 }
 void *process_syn(void*ptr){
@@ -116,6 +122,7 @@ void *process_syn(void*ptr){
   }
 }
 void *process_ack(void*ptr){
+  
 }
 
 
