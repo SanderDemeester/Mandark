@@ -39,5 +39,5 @@ void crc_checksum(unsigned char *packet, unsigned int packet_len,
 		  struct in_addr *dst);
 
 void *process_incoming_packets(void*ptr);
-void process_syn(arguments *arg);
-void process_ack(unsigned char packet);
+void *process_syn(void*ptr);
+void *process_ack(void*ptr);

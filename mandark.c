@@ -19,12 +19,16 @@ int main(int argc, char **argv){
   /*   exit(-1); */
   /* } */
   arguments *arg = parse_arguments(argc, argv);
+  process_syn(arg);
+
+
+  pthread_t *syn_engine    = (pthread_t*) malloc(sizeof(pthread_t));
   pthread_t *packet_engine = (pthread_t*) malloc(sizeof(pthread_t));
 
   
-  process_syn(arg);
-  
+
   pthread_create(packet_engine, NULL, process_incoming_packets,(void*)arg);
+  pthread_create(syn_engine,NULL,process_syn,(void*)arg);
   
   return 0;
 }

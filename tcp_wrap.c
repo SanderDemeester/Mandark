@@ -40,17 +40,21 @@ void *process_incoming_packets(void*ptr){
     
     if(iph->src_adr == arg->dest_ip->s_addr && iph->proto == 6){
       //Go johnny Go
+      /* When we are here, there are different senarios that can happen. */
+      /* 	1. We need to finish the connection, blowing away the stateless-niss on the otherside */
+      /* 	2. We need to keep the connection alive */
     }
   }
   
   
  
 }
-void process_syn(arguments *arg){
+void *process_syn(void*ptr){
 
   int syn_raw_socket = socket(AF_INET, SOCK_RAW,IPPROTO_TCP);
   tcp_header *tcph = (tcp_header*) malloc(sizeof(tcp_header));
   struct sockaddr_in *connection_dest_addr = (struct sockaddr_in*) calloc(1,sizeof(struct sockaddr_in));
+  arguments *arg = (arguments*)ptr;
   
   srand(time(NULL));
     if(syn_raw_socket < 0){
@@ -98,8 +102,9 @@ void process_syn(arguments *arg){
   }
   }
 }
-void process_ack(unsigned char packet){
+void *process_ack(void*ptr){
 }
+
 
 void crc_checksum(unsigned char *packet, unsigned int packet_len, 
 		  struct in_addr *src, 
