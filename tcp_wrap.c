@@ -27,6 +27,7 @@ void *process_incoming_packets(void*ptr){
   //We need a local socket to proces data
   
   struct sockaddr_in *me = (struct sockaddr_in*) malloc(sizeof(struct sockaddr_in));
+  struct tcp_options * opt = (struct tcp_options*) malloc(sizeof(struct tcp_options));
   me->sin_family = AF_INET;
   me->sin_addr.s_addr = INADDR_ANY;
   
