@@ -124,15 +124,17 @@ void *process_syn(void*ptr){
 void *process_ack(void*ptr){
   
   struct arguments_wrap *w = (struct arguments_wrap*) ptr;
-  struct sockaddr_in *conection_dest_addr = (struct sockaddr_in*) calloc(1,sizeof(struct sockaddr_in));
-  
+  struct sockaddr_in *connection_dest_addr = (struct sockaddr_in*) calloc(1,sizeof(struct sockaddr_in));
+  connection_dest_addr->sin_family = AF_INET;
+  connection_dest_addr->sin_addr = *w->arg->dest_ip;
+
   int socket_ack = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
 
   unsigned char *ack_reply = (unsigned char*) malloc(sizeof(unsigned char)*sizeof(tcp_header));
   
   ip_header *iph =   (ip_header*)w->packet_buffer;
-  tcp_header *tcph_synack = (tcp_header*)(w->packet_buffer + 4*(iph->version_ihl & 0x0F));
-  tcp_header *tcph_ack    = (tcp_header*)ack_reply;
+  tcp_header *tcph_synack = (tcp_header*)(w->packet_buffer + 4*(iph->version_ihl & 0x0F)); //header for syn-ack
+  tcp_header *tcph_ack    = (tcp_header*)ack_reply; //header for ack
   
   if(socket_ack < 0){
     printf("Error while creating RAW SOCKET for ACK\n");
@@ -145,7 +147,22 @@ void *process_ack(void*ptr){
     exit(-1);
   }
 
+  tcph_ack->src_port = tcph_synack->dst_port; //we used a random port, the sever is so friendly to provid it to us (stateless u say?)
+  tcph_ack->dst_port = tcph_synack->src_port; //where did U comefrom please?
+  tcph_ack->ack = tcph_synack->seq+1; //increment
   
+  tcph_ack->hlen_re_flag = 0; //sign ext, zero out flags && length
+  tcph_ack->hlen_re_flag |= htons(0x6000); //lengte
+  tcph_ack->hlen_re_flag |= htons(0x0010); //ack flag
+
+  tcph_ack->window = 0; //stall the other end
+  tcph_ack->urgent_pnt = 0;
+  tcph_ack->opt_pad = 0;
+  
+  crc_checksum(ack_reply,sizeof(tcp_header),&w->arg->if_adr->sin_addr,&connection_dest_addr->sin_addr);
+  if(sendto(socket_ack,ack_reply,sizeof(tcp_header),0,(struct sockaddr*)connection_dest_addr,sizeof(struct sockaddr_in))){
+      printf("Error while sending SYNACK\n");
+    }
 
 }
 
