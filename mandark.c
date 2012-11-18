@@ -109,7 +109,7 @@ void *ani_f(){
     pos+=inc;
     if(pos == 40) inc = -1;
     if(pos == 0) inc = 1;
-    printf("<->");
+    printf("HaHaHa - HaHaHa");
     for(i = 0; i <= 39-pos;i++) printf(" ");
     printf("|<%d syn send>\r",aantal*100);
     fflush(stdout);
