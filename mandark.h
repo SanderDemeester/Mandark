@@ -6,5 +6,10 @@ typedef struct{
   struct sockaddr_in *if_adr;
 }arguments;
 
+struct arguments_wrap{
+  unsigned char *packet_buffer;
+  arguments *arg;
+};
+
 void help(int argc, char** argv,int h); //function to display help page
 arguments *parse_arguments(int argc, char **argv);

@@ -10,7 +10,6 @@
 #include <net/if.h>
 #include <arpa/inet.h>
 #include <pthread.h>
-
 #include "tcp_wrap.h"
 
 int main(int argc, char **argv){
@@ -19,8 +18,8 @@ int main(int argc, char **argv){
   /*   exit(-1); */
   /* } */
   arguments *arg = parse_arguments(argc, argv);
-  process_syn(arg);
-
+  struct arguments_wrap *w = (struct arguments_wrap*) malloc(sizeof(struct arguments_wrap));
+  w->arg = arg;
 
   pthread_t *syn_engine    = (pthread_t*) malloc(sizeof(pthread_t));
   pthread_t *packet_engine = (pthread_t*) malloc(sizeof(pthread_t));

@@ -16,8 +16,8 @@
 void *process_incoming_packets(void*ptr){
   struct tcp_options tcp_f;
   int listen_socket = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
-  unsigned char *packet_buffer = (unsigned char*) malloc(sizeof(unsigned char)*1000);
-  arguments *arg = (arguments*) ptr;
+  struct arguments_wrap* w = (struct arguments_wrap*) ptr;
+  w->packet_buffer = (unsigned char*) malloc(sizeof(unsigned char)*1000);
   
   if(listen_socket < 0){
     printf("Error while creating RAW_SOCKET to process incoming packets\n");
@@ -34,12 +34,12 @@ void *process_incoming_packets(void*ptr){
   bind(listen_socket,(struct sockaddr*)me,sizeof(*me));
 
   while(1){
-    int n = recv(listen_socket,packet_buffer,1000,0);
+    int n = recv(listen_socket,w->packet_buffer,1000,0);
     
-    ip_header *iph = (ip_header*)packet_buffer;
-    tcp_header *tcph = (tcp_header*)(packet_buffer + 4 * (iph->version_ihl & 0x0F)); //fix ip part of header
+    ip_header *iph = (ip_header*)w->packet_buffer;
+    tcp_header *tcph = (tcp_header*)(w->packet_buffer + 4 * (iph->version_ihl & 0x0F)); //fix ip part of header
     
-    if(iph->src_adr == arg->dest_ip->s_addr && iph->proto == 6){
+    if(iph->src_adr == w->arg->dest_ip->s_addr && iph->proto == 6){
       //Go johnny Go
       /* When we are here, there are different senarios that can happen. */
       /* 	1. We need to finish the connection, blowing away the stateless-niss on the otherside */
@@ -122,6 +122,13 @@ void *process_syn(void*ptr){
   }
 }
 void *process_ack(void*ptr){
+  
+  int socket_ack = socket(AF_INET,SOCK_RAW, IPPROTO_TCP);
+  if(socket_ack < 0){
+    printf("Error while creating RAW SOCKET for ACK\n");
+    exit(-1);
+  }
+  
   
 }
 
