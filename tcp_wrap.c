@@ -123,13 +123,22 @@ void *process_syn(void*ptr){
 }
 void *process_ack(void*ptr){
   
-  int socket_ack = socket(AF_INET,SOCK_RAW, IPPROTO_TCP);
+  struct arguments_wrap *w = (struct arguments_wrap*) ptr;
+  int socket_ack = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
+  
   if(socket_ack < 0){
     printf("Error while creating RAW SOCKET for ACK\n");
     exit(-1);
   }
   
+  if(bind(socket_ack,(struct sockaddr*)w->arg->if_adr,
+	  sizeof(struct sockaddr_in)) == -1){
+    printf("Fear for binding?\n");
+    exit(-1);
+  }
+
   
+  struct sockaddr_in *conection_dest_addr = (struct sockaddr_in*) calloc(1,sizeof(struct sockaddr_in));
 }
 
 
