@@ -24,7 +24,7 @@ int main(int argc, char **argv){
   
   process_syn(arg);
   
-  pthread_create(packet_engine, NULL, process_incoming_packets,NULL);
+  pthread_create(packet_engine, NULL, process_incoming_packets,(void*)arg);
   
   return 0;
 }

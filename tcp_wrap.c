@@ -17,6 +17,7 @@ void *process_incoming_packets(void*ptr){
   struct tcp_options tcp_f;
   int listen_socket = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
   unsigned char *packet_buffer = (unsigned char*) malloc(sizeof(unsigned char)*1000);
+  arguments *arg = (arguments*) ptr;
   
   if(listen_socket < 0){
     printf("Error while creating RAW_SOCKET to process incoming packets\n");
@@ -32,6 +33,12 @@ void *process_incoming_packets(void*ptr){
   bind(listen_socket,(struct sockaddr*)me,sizeof(*me));
 
   while(1){
+    int n = recv(listen_socket,packet_buffer,1000,0);
+    
+    ip_header *iph = (ip_header*)packet_buffer;
+    tcp_header *tcph = (tcp_header*)(packet_buffer + 4 * (iph->version_ihl & 0x0F)); //fix ip part of header
+    
+
   }
   
   
