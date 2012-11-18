@@ -43,6 +43,11 @@ void *process_incoming_packets(void*ptr){
       /* When we are here, there are different senarios that can happen. */
       /* 	1. We need to finish the connection, blowing away the stateless-niss on the otherside */
       /* 	2. We need to keep the connection alive */
+
+      struct in_addr *src_addr = (struct in_addr*) malloc(sizeof(struct in_addr));
+      src_addr->s_addr = iph->src_adr;
+      
+
     }
   }
   
