@@ -8,4 +8,5 @@ typedef struct{
 
 
 void help(int argc, char** argv,int h); //function to display help page
+void *ani_f();
 arguments *parse_arguments(int argc, char **argv);

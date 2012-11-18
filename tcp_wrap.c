@@ -109,6 +109,7 @@ void *process_syn(void*ptr){
     printf("Error while sending SYN packet\n");
     exit(-1);
   }
+  usleep(5*1000); //5ms 
   }
 }
 void process_ack(unsigned char*b,arguments*arg){

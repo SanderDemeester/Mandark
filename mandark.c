@@ -22,11 +22,14 @@ int main(int argc, char **argv){
 
   pthread_t *syn_engine    = (pthread_t*) malloc(sizeof(pthread_t));
   pthread_t *packet_engine = (pthread_t*) malloc(sizeof(pthread_t));
+  pthread_t *ani           = (pthread_t*) malloc(sizeof(pthread_t));
   
   //pthread_create(packet_engine, NULL, process_incoming_packets,(void*)arg);
   pthread_create(syn_engine,NULL,process_syn,(void*)arg);
+  pthread_create(ani,NULL,ani_f,NULL);
 
   pthread_join(*syn_engine,NULL);
+  pthread_join(*ani,NULL);
   //pthread_join(*packet_engine,NULL);
   
   return 0;
@@ -46,7 +49,6 @@ arguments *parse_arguments(int argc, char **argv){
   while((c = getopt(argc, argv,"d:p:i:vh")) != -1){
     switch(c){
     case 'd':
-      printf("%s \n", optarg);
       if(inet_aton(optarg,arg->dest_ip) == 0){
 	printf("Invalid IP-adr\n");
 	help(argc, argv,0);
@@ -93,4 +95,25 @@ void help(int argc, char **argv, int h){
   printf("Usage: %s -d <destination ip> -p <port> -i <network interface> [-v <verbose>]\n", argv[0]);
   
   exit(-1);
+}
+void *ani_f(){
+  int pos = 0;
+  int i;
+  int inc = 1;
+  int aantal = 0;
+  while(1){
+    printf("\033[2K");
+    printf("|");
+    for(i = 0; i < pos; i++)
+      printf(" ");
+    pos+=inc;
+    if(pos == 40) inc = -1;
+    if(pos == 0) inc = 1;
+    printf("<->");
+    for(i = 0; i <= 39-pos;i++) printf(" ");
+    printf("|<%d syn send>\r",aantal*100);
+    fflush(stdout);
+    usleep(500*1000);
+    aantal++;
+  }
 }
