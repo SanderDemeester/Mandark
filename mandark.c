@@ -37,10 +37,13 @@ arguments *parse_arguments(int argc, char **argv){
   int c = 0;
   
   arguments *arg = (arguments*) malloc(sizeof(arguments));
+  arg->dest_ip = (struct in_addr*) malloc(sizeof(struct in_addr));
+  arg->if_adr =  (struct sockaddr_in*) malloc(sizeof(struct sockaddr_in));
   
   while((c = getopt(argc, argv,"d:p:i:vh")) != -1){
     switch(c){
     case 'd':
+      printf("%s \n", optarg);
       if(inet_aton(optarg,arg->dest_ip) == 0){
 	printf("Invalid IP-adr\n");
 	help(argc, argv,0);
