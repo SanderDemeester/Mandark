@@ -124,7 +124,15 @@ void *process_syn(void*ptr){
 void *process_ack(void*ptr){
   
   struct arguments_wrap *w = (struct arguments_wrap*) ptr;
+  struct sockaddr_in *conection_dest_addr = (struct sockaddr_in*) calloc(1,sizeof(struct sockaddr_in));
+  
   int socket_ack = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
+
+  unsigned char *ack_reply = (unsigned char*) malloc(sizeof(unsigned char)*sizeof(tcp_header));
+  
+  ip_header *iph =   (ip_header*)w->packet_buffer;
+  tcp_header *tcph_synack = (tcp_header*)(w->packet_buffer + 4*(iph->version_ihl & 0x0F));
+  tcp_header *tcph_ack    = (tcp_header*)ack_reply;
   
   if(socket_ack < 0){
     printf("Error while creating RAW SOCKET for ACK\n");
@@ -138,7 +146,7 @@ void *process_ack(void*ptr){
   }
 
   
-  struct sockaddr_in *conection_dest_addr = (struct sockaddr_in*) calloc(1,sizeof(struct sockaddr_in));
+
 }
 
 
