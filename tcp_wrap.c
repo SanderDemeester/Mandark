@@ -38,7 +38,9 @@ void *process_incoming_packets(void*ptr){
     ip_header *iph = (ip_header*)packet_buffer;
     tcp_header *tcph = (tcp_header*)(packet_buffer + 4 * (iph->version_ihl & 0x0F)); //fix ip part of header
     
-
+    if(iph->src_adr == arg->dest_ip->s_addr && ip->proto == 6){
+      //Go johnny Go
+    }
   }
   
   
