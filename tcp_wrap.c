@@ -48,6 +48,13 @@ void *process_incoming_packets(void*ptr){
       struct in_addr *src_addr = (struct in_addr*) malloc(sizeof(struct in_addr));
       src_addr->s_addr = iph->src_adr;
       
+      opt->urg = tcph->hlen_re_flag & htons(0x0020);
+      opt->psh = tcph->hlen_re_flag & htons(0x0008);
+      opt->rst = tcph->hlen_re_flag & htons(0x0004);
+      opt->syn = tcph->hlen_re_flag & htons(0x0002);
+      opt->ack = tcph->hlen_re_flag & htons(0x0010);
+      opt->fin = tcph->hlen_re_flag & htons(0x0001);
+      
 
     }
   }
