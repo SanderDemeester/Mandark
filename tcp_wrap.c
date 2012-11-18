@@ -14,10 +14,10 @@
 #include "tcp_wrap.h"
 
 void *process_incoming_packets(void*ptr){
-  struct tcp_options tcp_f;
-  int listen_socket = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
+  struct tcp_options *tcp_f = (struct tcp_options*) calloc(1,sizeof(struct tcp_options));
   arguments *arg = (arguments*)ptr;
-  
+  int listen_socket = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
+
   if(listen_socket < 0){
     printf("Error while creating RAW_SOCKET to process incoming packets\n");
     exit(-1);
@@ -30,41 +30,42 @@ void *process_incoming_packets(void*ptr){
   me->sin_addr.s_addr = INADDR_ANY;
   
   bind(listen_socket,(struct sockaddr*)me,sizeof(*me));
-  unsigned char b[10000];
+  unsigned char b[500]; //alocate on the stack for this thread.
   while(1){
-    int n = recv(listen_socket,b,10000,0);
-    printf("%d \n",n);
+    int n = recv(listen_socket,b,500,0); //listen to everything adr to us
     
     ip_header *iph = (ip_header*)b;
     tcp_header *tcph = (tcp_header*)(b + 4 * (iph->version_ihl & 0x0F)); //fix ip part of header 
     if(iph->src_adr == arg->dest_ip->s_addr && iph->proto == 6){
-  /*     //Go johnny Go */
-  /*     /\* When we are here, there are different senarios that can happen. *\/ */
-  /*     /\* 	1. We need to finish the connection, blowing away the stateless-niss on the otherside *\/ */
-  /*     /\* 	2. We need to keep the connection alive *\/ */
+      //Go johnny Go
+      /* When we are here, there are different senarios that can happen. */
+      /* 	1. We need to finish the connection, blowing away the stateless-niss on the otherside */
+      /* 	2. We need to keep the connection alive */
 
-  /*     struct in_addr src_addr; */
-  /*     src_addr.s_addr = iph->src_adr; */
+      struct in_addr src_addr;
+      src_addr.s_addr = iph->src_adr;
       
-  /*     opt->urg = tcph->hlen_re_flag & htons(0x0020); */
-  /*     opt->psh = tcph->hlen_re_flag & htons(0x0008); */
-  /*     opt->rst = tcph->hlen_re_flag & htons(0x0004); */
-  /*     opt->syn = tcph->hlen_re_flag & htons(0x0002); */
-  /*     opt->ack = tcph->hlen_re_flag & htons(0x0010); */
-  /*     opt->fin = tcph->hlen_re_flag & htons(0x0001); */
+      tcp_f->urg = tcph->hlen_re_flag & htons(0x0020);
+      tcp_f->psh = tcph->hlen_re_flag & htons(0x0008);
+      tcp_f->rst = tcph->hlen_re_flag & htons(0x0004);
+      tcp_f->syn = tcph->hlen_re_flag & htons(0x0002);
+      tcp_f->ack = tcph->hlen_re_flag & htons(0x0010);
+      tcp_f->fin = tcph->hlen_re_flag & htons(0x0001);
 
-  /*     process_ack(ptr); */
+      process_ack(b,(arguments*)ptr);
     }
   }
 }
 void *process_syn(void*ptr){
-
-  int syn_raw_socket = socket(AF_INET, SOCK_RAW,IPPROTO_TCP);
-  tcp_header *tcph = (tcp_header*) malloc(sizeof(tcp_header));
-  struct sockaddr_in *connection_dest_addr = (struct sockaddr_in*) calloc(1,sizeof(struct sockaddr_in));
-  arguments *arg = (arguments*)ptr;
   
-  srand(time(NULL));
+  arguments *arg = (arguments*)ptr;
+  int syn_raw_socket = socket(AF_INET, SOCK_RAW,IPPROTO_TCP); //creating raw socket to send syn packets
+  tcp_header *tcph = (tcp_header*) malloc(sizeof(tcp_header)); //our tcp header
+  
+  struct sockaddr_in *connection_dest_addr = (struct sockaddr_in*) calloc(1,sizeof(struct sockaddr_in)); //sockadr for destination, get info from arg.
+  
+  srand(time(NULL)); //seeding random function for seq numbers.
+  
     if(syn_raw_socket < 0){
     printf("Error while creating RAW socket for syn sending\n");
     printf(".. Sorry\n");
@@ -80,7 +81,7 @@ void *process_syn(void*ptr){
     exit(-1);
   }
   
-  
+  //Fill in destination socket information.
   connection_dest_addr->sin_family = AF_INET;
   connection_dest_addr->sin_addr = *arg->dest_ip;
   
@@ -111,6 +112,9 @@ void *process_syn(void*ptr){
   }
 }
 void process_ack(unsigned char*b,arguments*arg){
+#ifdef debug
+  printf("incoming ack\n");
+#endif
   
   struct sockaddr_in *connection_dest_addr = (struct sockaddr_in*) calloc(1,sizeof(struct sockaddr_in));
   connection_dest_addr->sin_family = AF_INET;

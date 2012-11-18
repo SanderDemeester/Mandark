@@ -13,20 +13,21 @@
 #include "tcp_wrap.h"
 
 int main(int argc, char **argv){
-  /* if(getuid()){ */
-  /*   printf("U root?\n"); */
-  /*   exit(-1); */
-  /* } */
+  if(getuid()){
+    printf("U root?\n");
+    exit(-1);
+  }
+  
   arguments *arg = parse_arguments(argc, argv);
 
   pthread_t *syn_engine    = (pthread_t*) malloc(sizeof(pthread_t));
   pthread_t *packet_engine = (pthread_t*) malloc(sizeof(pthread_t));
+  
+  //pthread_create(packet_engine, NULL, process_incoming_packets,(void*)arg);
+  pthread_create(syn_engine,NULL,process_syn,(void*)arg);
 
-  pthread_create(packet_engine, NULL, process_incoming_packets,(void*)arg);
-  //  pthread_create(syn_engine,NULL,process_syn,(void*)arg);
-
-  //pthread_join(*syn_engine,NULL);
-  pthread_join(*packet_engine,NULL);
+  pthread_join(*syn_engine,NULL);
+  //pthread_join(*packet_engine,NULL);
   
   return 0;
 }
