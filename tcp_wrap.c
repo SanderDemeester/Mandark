@@ -16,8 +16,7 @@
 void *process_incoming_packets(void*ptr){
   struct tcp_options tcp_f;
   int listen_socket = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
-  struct arguments_wrap* w = (struct arguments_wrap*) ptr;
-  w->packet_buffer = (unsigned char*) malloc(sizeof(unsigned char)*1000);
+  arguments *arg = (arguments*)ptr;
   
   if(listen_socket < 0){
     printf("Error while creating RAW_SOCKET to process incoming packets\n");
@@ -27,46 +26,36 @@ void *process_incoming_packets(void*ptr){
   //We need a local socket to proces data
   
   struct sockaddr_in *me = (struct sockaddr_in*) malloc(sizeof(struct sockaddr_in));
-  struct tcp_options * opt = (struct tcp_options*) malloc(sizeof(struct tcp_options));
   me->sin_family = AF_INET;
   me->sin_addr.s_addr = INADDR_ANY;
   
   bind(listen_socket,(struct sockaddr*)me,sizeof(*me));
-
+  unsigned char b[10000];
   while(1){
-    int n = recv(listen_socket,w->packet_buffer,1000,0);
+    int n = recv(listen_socket,b,10000,0);
+    printf("%d \n",n);
     
-    ip_header *iph = (ip_header*)w->packet_buffer;
-    tcp_header *tcph = (tcp_header*)(w->packet_buffer + 4 * (iph->version_ihl & 0x0F)); //fix ip part of header
-    
-    if(iph->src_adr == w->arg->dest_ip->s_addr && iph->proto == 6){
-      //Go johnny Go
-      /* When we are here, there are different senarios that can happen. */
-      /* 	1. We need to finish the connection, blowing away the stateless-niss on the otherside */
-      /* 	2. We need to keep the connection alive */
+    ip_header *iph = (ip_header*)b;
+    tcp_header *tcph = (tcp_header*)(b + 4 * (iph->version_ihl & 0x0F)); //fix ip part of header 
+    if(iph->src_adr == arg->dest_ip->s_addr && iph->proto == 6){
+  /*     //Go johnny Go */
+  /*     /\* When we are here, there are different senarios that can happen. *\/ */
+  /*     /\* 	1. We need to finish the connection, blowing away the stateless-niss on the otherside *\/ */
+  /*     /\* 	2. We need to keep the connection alive *\/ */
 
-      struct in_addr *src_addr = (struct in_addr*) malloc(sizeof(struct in_addr));
-      src_addr->s_addr = iph->src_adr;
+  /*     struct in_addr src_addr; */
+  /*     src_addr.s_addr = iph->src_adr; */
       
-      opt->urg = tcph->hlen_re_flag & htons(0x0020);
-      opt->psh = tcph->hlen_re_flag & htons(0x0008);
-      opt->rst = tcph->hlen_re_flag & htons(0x0004);
-      opt->syn = tcph->hlen_re_flag & htons(0x0002);
-      opt->ack = tcph->hlen_re_flag & htons(0x0010);
-      opt->fin = tcph->hlen_re_flag & htons(0x0001);
+  /*     opt->urg = tcph->hlen_re_flag & htons(0x0020); */
+  /*     opt->psh = tcph->hlen_re_flag & htons(0x0008); */
+  /*     opt->rst = tcph->hlen_re_flag & htons(0x0004); */
+  /*     opt->syn = tcph->hlen_re_flag & htons(0x0002); */
+  /*     opt->ack = tcph->hlen_re_flag & htons(0x0010); */
+  /*     opt->fin = tcph->hlen_re_flag & htons(0x0001); */
 
-
-      //Finish handshake if syn && ack
-      if(opt->syn && opt->ack){
-      }
-      //Keep connection alive ack
-      if(opt->ack){
-      }else{
-	//help
-      }
+  /*     process_ack(ptr); */
     }
   }
- 
 }
 void *process_syn(void*ptr){
 
@@ -121,19 +110,18 @@ void *process_syn(void*ptr){
   }
   }
 }
-void *process_ack(void*ptr){
+void process_ack(unsigned char*b,arguments*arg){
   
-  struct arguments_wrap *w = (struct arguments_wrap*) ptr;
   struct sockaddr_in *connection_dest_addr = (struct sockaddr_in*) calloc(1,sizeof(struct sockaddr_in));
   connection_dest_addr->sin_family = AF_INET;
-  connection_dest_addr->sin_addr = *w->arg->dest_ip;
+  connection_dest_addr->sin_addr = *arg->dest_ip;
 
   int socket_ack = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
 
   unsigned char *ack_reply = (unsigned char*) malloc(sizeof(unsigned char)*sizeof(tcp_header));
   
-  ip_header *iph =   (ip_header*)w->packet_buffer;
-  tcp_header *tcph_synack = (tcp_header*)(w->packet_buffer + 4*(iph->version_ihl & 0x0F)); //header for syn-ack
+  ip_header *iph =   (ip_header*)b;
+  tcp_header *tcph_synack = (tcp_header*)(b + 4*(iph->version_ihl & 0x0F)); //header for syn-ack
   tcp_header *tcph_ack    = (tcp_header*)ack_reply; //header for ack
   
   if(socket_ack < 0){
@@ -141,7 +129,7 @@ void *process_ack(void*ptr){
     exit(-1);
   }
   
-  if(bind(socket_ack,(struct sockaddr*)w->arg->if_adr,
+  if(bind(socket_ack,(struct sockaddr*)arg->if_adr,
 	  sizeof(struct sockaddr_in)) == -1){
     printf("Fear for binding?\n");
     exit(-1);
@@ -159,7 +147,7 @@ void *process_ack(void*ptr){
   tcph_ack->urgent_pnt = 0;
   tcph_ack->opt_pad = 0;
   
-  crc_checksum(ack_reply,sizeof(tcp_header),&w->arg->if_adr->sin_addr,&connection_dest_addr->sin_addr);
+  crc_checksum(ack_reply,sizeof(tcp_header),&arg->if_adr->sin_addr,&connection_dest_addr->sin_addr);
   if(sendto(socket_ack,ack_reply,sizeof(tcp_header),0,(struct sockaddr*)connection_dest_addr,sizeof(struct sockaddr_in))){
       printf("Error while sending SYNACK\n");
     }

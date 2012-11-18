@@ -18,16 +18,15 @@ int main(int argc, char **argv){
   /*   exit(-1); */
   /* } */
   arguments *arg = parse_arguments(argc, argv);
-  struct arguments_wrap *w = (struct arguments_wrap*) malloc(sizeof(struct arguments_wrap));
-  w->arg = arg;
 
   pthread_t *syn_engine    = (pthread_t*) malloc(sizeof(pthread_t));
   pthread_t *packet_engine = (pthread_t*) malloc(sizeof(pthread_t));
 
-  
-
   pthread_create(packet_engine, NULL, process_incoming_packets,(void*)arg);
-  pthread_create(syn_engine,NULL,process_syn,(void*)arg);
+  //  pthread_create(syn_engine,NULL,process_syn,(void*)arg);
+
+  //pthread_join(*syn_engine,NULL);
+  pthread_join(*packet_engine,NULL);
   
   return 0;
 }
