@@ -141,7 +141,7 @@ void process_ack(unsigned char*b,arguments*arg, int *socket_ack){
 
   tcph_ack->src_port = tcph_synack->dst_port; //we used a random port, the sever is so friendly to provid it to us (stateless u say?)
   tcph_ack->dst_port = tcph_synack->src_port; //where did U comefrom please?
-  tcph_ack->ack = tcph_synack->seq+1; //increment
+  tcph_ack->ack = htonl(ntohl(tcph_synack->seq)+1);
   
   tcph_ack->hlen_re_flag = 0; //sign ext, zero out flags && length
   tcph_ack->hlen_re_flag |= htons(0x6000); //lengte
