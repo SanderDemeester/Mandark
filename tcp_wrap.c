@@ -124,7 +124,7 @@ void process_ack(unsigned char*b,arguments*arg, int *socket_ack){
 
   unsigned char *ack_reply = (unsigned char*) malloc(sizeof(unsigned char)*sizeof(tcp_header));
   
-  ip_header *iph =   (ip_header*)b;
+  ip_header *iph          = (ip_header*)b;
   tcp_header *tcph_synack = (tcp_header*)(b + 4*(iph->version_ihl & 0x0F)); //header for syn-ack
   tcp_header *tcph_ack    = (tcp_header*)ack_reply; //header for ack
   
@@ -142,6 +142,7 @@ void process_ack(unsigned char*b,arguments*arg, int *socket_ack){
   tcph_ack->src_port = tcph_synack->dst_port; //we used a random port, the sever is so friendly to provid it to us (stateless u say?)
   tcph_ack->dst_port = tcph_synack->src_port; //where did U comefrom please?
   tcph_ack->ack = htonl(ntohl(tcph_synack->seq)+1);
+  tcph_ack->seq = tcph_synack->ack;
   
   tcph_ack->hlen_re_flag = 0; //sign ext, zero out flags && length
   tcph_ack->hlen_re_flag |= htons(0x6000); //lengte
