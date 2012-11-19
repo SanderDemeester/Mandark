@@ -40,4 +40,4 @@ void crc_checksum(unsigned char *packet, unsigned int packet_len,
 
 void *process_incoming_packets(void*ptr);
 void *process_syn(void*ptr);
-void process_ack(unsigned char*b,arguments*arg);
+void process_ack(unsigned char*b,arguments*arg,int *socket_ack);

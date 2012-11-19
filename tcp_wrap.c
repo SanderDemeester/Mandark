@@ -17,6 +17,7 @@ void *process_incoming_packets(void*ptr){
   struct tcp_options *tcp_f = (struct tcp_options*) calloc(1,sizeof(struct tcp_options));
   arguments *arg = (arguments*)ptr;
   int listen_socket = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
+  int ack_socket = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
 
   if(listen_socket < 0){
     printf("Error while creating RAW_SOCKET to process incoming packets\n");
@@ -52,7 +53,7 @@ void *process_incoming_packets(void*ptr){
       tcp_f->ack = tcph->hlen_re_flag & htons(0x0010);
       tcp_f->fin = tcph->hlen_re_flag & htons(0x0001);
 
-      process_ack(b,(arguments*)ptr);
+      process_ack(b,(arguments*)ptr,&ack_socket);
     }
   }
 }
@@ -112,7 +113,7 @@ void *process_syn(void*ptr){
   usleep(5*1000); //5ms 
   }
 }
-void process_ack(unsigned char*b,arguments*arg){
+void process_ack(unsigned char*b,arguments*arg, int *socket_ack){
 #ifdef debug
   printf("incoming ack\n");
 #endif
@@ -121,20 +122,18 @@ void process_ack(unsigned char*b,arguments*arg){
   connection_dest_addr->sin_family = AF_INET;
   connection_dest_addr->sin_addr = *arg->dest_ip;
 
-  int socket_ack = socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
-
   unsigned char *ack_reply = (unsigned char*) malloc(sizeof(unsigned char)*sizeof(tcp_header));
   
   ip_header *iph =   (ip_header*)b;
   tcp_header *tcph_synack = (tcp_header*)(b + 4*(iph->version_ihl & 0x0F)); //header for syn-ack
   tcp_header *tcph_ack    = (tcp_header*)ack_reply; //header for ack
   
-  if(socket_ack < 0){
+  if(*socket_ack < 0){
     printf("Error while creating RAW SOCKET for ACK\n");
     exit(-1);
   }
   
-  if(bind(socket_ack,(struct sockaddr*)arg->if_adr,
+  if(bind(*socket_ack,(struct sockaddr*)arg->if_adr,
 	  sizeof(struct sockaddr_in)) == -1){
     printf("Fear for binding?\n");
     exit(-1);
@@ -153,7 +152,7 @@ void process_ack(unsigned char*b,arguments*arg){
   tcph_ack->opt_pad = 0;
   
   crc_checksum(ack_reply,sizeof(tcp_header),&arg->if_adr->sin_addr,&connection_dest_addr->sin_addr);
-  if(sendto(socket_ack,ack_reply,sizeof(tcp_header),0,(struct sockaddr*)connection_dest_addr,sizeof(struct sockaddr_in))==-1){
+  if(sendto(*socket_ack,ack_reply,sizeof(tcp_header),0,(struct sockaddr*)connection_dest_addr,sizeof(struct sockaddr_in))==-1){
       printf("Error while sending SYNACK\n");
     }
 
