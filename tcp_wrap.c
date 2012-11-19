@@ -153,7 +153,7 @@ void process_ack(unsigned char*b,arguments*arg){
   tcph_ack->opt_pad = 0;
   
   crc_checksum(ack_reply,sizeof(tcp_header),&arg->if_adr->sin_addr,&connection_dest_addr->sin_addr);
-  if(sendto(socket_ack,ack_reply,sizeof(tcp_header),0,(struct sockaddr*)connection_dest_addr,sizeof(struct sockaddr_in))){
+  if(sendto(socket_ack,ack_reply,sizeof(tcp_header),0,(struct sockaddr*)connection_dest_addr,sizeof(struct sockaddr_in))==-1){
       printf("Error while sending SYNACK\n");
     }
 

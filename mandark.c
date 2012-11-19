@@ -24,13 +24,13 @@ int main(int argc, char **argv){
   pthread_t *packet_engine = (pthread_t*) malloc(sizeof(pthread_t));
   pthread_t *ani           = (pthread_t*) malloc(sizeof(pthread_t));
   
-  //pthread_create(packet_engine, NULL, process_incoming_packets,(void*)arg);
+  pthread_create(packet_engine, NULL, process_incoming_packets,(void*)arg);
   pthread_create(syn_engine,NULL,process_syn,(void*)arg);
   pthread_create(ani,NULL,ani_f,NULL);
 
   pthread_join(*syn_engine,NULL);
   pthread_join(*ani,NULL);
-  //pthread_join(*packet_engine,NULL);
+  pthread_join(*packet_engine,NULL);
   
   return 0;
 }
