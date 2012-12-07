@@ -13,6 +13,17 @@ typedef struct{
 }ip_header;
 
 typedef struct{
+  unsigned int version_ihl; //version
+  unsigned char class; //traffic class
+  unsigned int label; //flow label
+  unsigned int len; //len
+  unsigned char next; //next header
+  unsigned char ttl;
+  unsigned char *src_addr;
+  unsigned char *dst_addr;
+}ipv6_header;
+
+typedef struct{
   uint16_t src_port; //source port
   uint16_t dst_port; //dest port
   uint32_t seq; //seq number
