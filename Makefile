@@ -10,8 +10,8 @@ debug: mandark
 
 mandark: $(obj)
 	$(CC) $(CFLAGS) $(obj) -o $@
-obj/%.o: src/*.c
-	$(CC) $(CFLAGS) -c -o $@ $<
+obj/%.o: src/%.c
+	$(CC) $(CFLAGS) -lm -c -o $@ $<
 clean:
 	if [ -f "Mandark" ]; then \
 	rm Mandark; \

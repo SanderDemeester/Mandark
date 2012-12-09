@@ -3,7 +3,7 @@
 #endif
 
 #include "header/tcp_wrap.h"
-#include "header/ip_router_advf.h"
+#include "header/ip6_router_advf.h"
 
 int main(int argc, char **argv){
   if(getuid()){
