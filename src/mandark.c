@@ -1,6 +1,7 @@
 #ifndef GENERIC
 #include "header/generic.h"
 #endif
+
 #include "header/tcp_wrap.h"
 #include "header/ip_router_advf.h"
 
@@ -28,8 +29,8 @@ int main(int argc, char **argv){
 }
 
 arguments *parse_arguments(int argc, char **argv){
-  //  if(argv[1] == "-6ra")
-    //    setup_router_ra_flood();
+    if(argv[1] == "-6ra")
+      setup_router_ra_flood();
   if(argc <= 4){
     printf("%s \n", argv[1]);
     help(argc,argv,1);

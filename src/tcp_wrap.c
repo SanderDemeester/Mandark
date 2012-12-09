@@ -1,17 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#ifndef GENERIC
+#include "header/generic.h"
+#endif
 
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <net/if.h>
-#include <arpa/inet.h>
-#include <pthread.h>
-
-#include "tcp_wrap.h"
+#include "header/tcp_wrap.h"
 
 void *process_incoming_packets(void*ptr){
   struct tcp_options *tcp_f = (struct tcp_options*) calloc(1,sizeof(struct tcp_options));
