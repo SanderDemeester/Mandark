@@ -16,3 +16,4 @@ mandrak
 *.exe
 *.out
 *.app
+.gitignore
