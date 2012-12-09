@@ -1,12 +1,12 @@
-src=$(wildcard src/*.c)
+B1;3201;0csrc=$(wildcard src/*.c)
 obj=$(addprefix obj/,$(notdir $(src:.c=.o)))
 CC=gcc
 CFLAGS=-I. -Wall -pthread -std=c99 -lm
-BIN=ckill
+BIN=mandark
 
-all:	ckill
+all:	mandark
 debug: CC += -g
-debug: ckill
+debug: mandark
 
 ckill: $(obj)
 	$(CC) $(CFLAGS) $(obj) -o $@
