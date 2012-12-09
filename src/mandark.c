@@ -36,10 +36,14 @@ int main(int argc, char **argv){
 }
 
 arguments *parse_arguments(int argc, char **argv){
+  if(argv[1] == "-6ra")
+    
   if(argc <= 4){
+    printf("%s \n", argv[1]);
     help(argc,argv,1);
   }
     
+
   int c = 0;
   
   arguments *arg = (arguments*) malloc(sizeof(arguments));
