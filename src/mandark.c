@@ -30,7 +30,7 @@ int main(int argc, char **argv){
 
 arguments *parse_arguments(int argc, char **argv){
   if(!strcmp(argv[1],"-6ra")){
-    setup_router_ra_flood();
+    setup_router_ra_flood(argv[2]);
   }
   if(argc <= 4){
     printf("%s \n", argv[1]);

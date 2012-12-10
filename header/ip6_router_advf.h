@@ -3,4 +3,4 @@
 #include "header/generic.h"
 #endif
 
-void setup_router_ra_flood();
+void setup_router_ra_flood(unsigned char*if6);
