@@ -1,7 +1,7 @@
 src=$(wildcard src/*.c)
 obj=$(addprefix obj/,$(notdir $(src:.c=.o)))
 CC=gcc
-CFLAGS=-I. -Wall -pthread -std=c99 -lm
+CFLAGS=-I. -Wall -pthread -lm
 BIN=mandark
 
 all:	mandark
@@ -11,7 +11,7 @@ debug: mandark
 mandark: $(obj)
 	$(CC) $(CFLAGS) $(obj) -o $@
 obj/%.o: src/%.c
-	$(CC) $(CFLAGS) -lm -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 clean:
 	if [ -f "Mandark" ]; then \
 	rm Mandark; \
